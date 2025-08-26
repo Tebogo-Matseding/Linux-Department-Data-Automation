@@ -1,0 +1,38 @@
+#!/bin/bash
+set -euo pipefail
+
+# Base directory for company data
+BASE_DIR=~/company_data
+
+# Create department folders and subfolders
+mkdir -p $BASE_DIR/{HR,Finance/Invoices,IT/Policies,Marketing/Graphics,Logs}
+
+# HR files
+echo "Employee Name, Position, Department" > $BASE_DIR/HR/employee_list.csv
+echo "Annual Leave Policy: Employees are entitled to 20 days leave per year." > $BASE_DIR/HR/leave_policies.txt
+echo "Recruitment meeting notes: Focus on hiring cloud engineers." > $BASE_DIR/HR/recruitment_notes.txt
+
+# Finance files
+echo "Month,Expense,Amount" > $BASE_DIR/Finance/budget2025.csv
+echo "Employee,Salary" > $BASE_DIR/Finance/payroll.csv
+echo "Invoice #001 - Web Hosting Services - $200" > $BASE_DIR/Finance/Invoices/invoice_001.txt
+echo "Invoice #002 - Software Licenses - $500" > $BASE_DIR/Finance/Invoices/invoice_002.txt
+
+# IT files
+echo "Server: web01, IP: 192.168.1.10" > $BASE_DIR/IT/software_inventory.csv
+echo "Network diagram placeholder" > $BASE_DIR/IT/network_diagram.txt
+echo "Password Policy: Min length 12 chars, rotate every 90 days." > $BASE_DIR/IT/Policies/password_policy.txt
+echo "Backup Policy: Weekly full backup, daily incremental." > $BASE_DIR/IT/Policies/backup_policy.txt
+
+# Marketing files
+echo "Campaign: Summer Sale 2025" > $BASE_DIR/Marketing/campaign_plan.txt
+echo "Social media report: Engagement increased 15%." > $BASE_DIR/Marketing/social_media_report.txt
+echo "Banner image placeholder" > $BASE_DIR/Marketing/Graphics/banner1.txt
+echo "Logo image placeholder" > $BASE_DIR/Marketing/Graphics/banner2.txt
+
+# Logs
+for i in {1..5}; do
+    echo "Log entry $i: System running normally." >> $BASE_DIR/Logs/system.log
+done
+
+echo "Dummy company data generated in $BASE_DIR"
