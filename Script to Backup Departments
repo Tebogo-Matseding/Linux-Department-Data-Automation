@@ -1,0 +1,39 @@
+#!/bin/bash
+set -euo pipefail
+
+# === CONFIGURATION ===
+HOST_IP="192.168.xxx.xxx" # Your Host IP
+ACCOUNT="devstoreaccount1"
+CONTAINER="departments"  # Your container name
+SAS_TOKEN="?sv=2018-03-28&spr=https%2Chttp&st=2025-08-26T07%3A35%3A54Z&se=2025-08-27T07%3A35%3A54Z&sr=c&sp=racwl&sig=EM1zOZUjinlouEemFNKq90dPS2ffVjmMJ2OdMg8Xjhg%3D" # Your SAS Token
+
+# Base directory where your department folders exist
+BASE_DIR="/srv/company_data"
+
+# Department folders
+FOLDERS=("Finance" "HR" "IT" "Logs" "Marketing")
+
+# Temporary directory for zips
+ZIP_DIR="/srv/backup_zips"
+mkdir -p "$ZIP_DIR"
+
+# Timestamp format for zip filename
+TIMESTAMP=$(date +"%H-%M-%S_%d-%m-%Y")
+
+for FOLDER in "${FOLDERS[@]}"; do
+    LOCAL_FOLDER="${BASE_DIR}/${FOLDER}"
+    if [ -d "$LOCAL_FOLDER" ]; then
+        ZIP_FILE="${ZIP_DIR}/${FOLDER}_${TIMESTAMP}.zip"
+        echo "Zipping folder $LOCAL_FOLDER -> $ZIP_FILE ..."
+        zip -r -j "$ZIP_FILE" "$LOCAL_FOLDER"
+
+        # Destination blob in container using folder prefix
+        DEST_URL="http://${HOST_IP}:10000/${ACCOUNT}/${CONTAINER}/${FOLDER}/${FOLDER}_${TIMESTAMP}.zip${SAS_TOKEN}"
+        echo "Uploading $ZIP_FILE to $DEST_URL ..."
+        azcopy copy "$ZIP_FILE" "$DEST_URL" --from-to=LocalBlob --overwrite=true --recursive=false
+    else
+        echo "Folder $LOCAL_FOLDER does not exist. Skipping."
+    fi
+done
+
+echo "All uploads completed!"
